@@ -26,35 +26,53 @@ passport.use(
     },
     (req, email, password, done, res) => {
       // console.log(email, password);
-      User.findOne({ email: email }, (err, user) => {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false, {
-            message: "User does not exist",
-          });
-        }
-
-        user
-          .login(password)
-          .then(() => {
-            // let userSecure = {};
-            // const unwantedKeys = ["password", "__v"];
-            // Object.keys(user["_doc"]).forEach((key) => {
-            //   if (unwantedKeys.indexOf(key) === -1) {
-            //     userSecure[key] = user[key];
-            //   }
-            // });
-            user["_doc"] = filterJson(user["_doc"], ["password", "__v"]);
-            return done(null, user);
-          })
-          .catch((err) => {
-            return done(err, false, {
-              message: "Password is incorrect.",
-            });
-          });
+      User.findOne({ email: email })
+  .then(user => {
+    if (!user) {
+      return done(null, false, { message: "User does not exist" });
+    }
+    return user.login(password)
+      .then(() => {
+        user["_doc"] = filterJson(user["_doc"], ["password", "__v"]);
+        return done(null, user);
+      })
+      .catch(err => {
+        return done(err, false, { message: "Password is incorrect." });
       });
+  })
+  .catch(err => {
+    return done(err);
+  });
+
+      // User.findOne({ email: email }, (err, user) => {
+      //   if (err) {
+      //     return done(err);
+      //   }
+      //   if (!user) {
+      //     return done(null, false, {
+      //       message: "User does not exist",
+      //     });
+      //   }
+
+      //   user
+      //     .login(password)
+      //     .then(() => {
+      //       // let userSecure = {};
+      //       // const unwantedKeys = ["password", "__v"];
+      //       // Object.keys(user["_doc"]).forEach((key) => {
+      //       //   if (unwantedKeys.indexOf(key) === -1) {
+      //       //     userSecure[key] = user[key];
+      //       //   }
+      //       // });
+      //       user["_doc"] = filterJson(user["_doc"], ["password", "__v"]);
+      //       return done(null, user);
+      //     })
+      //     .catch((err) => {
+      //       return done(err, false, {
+      //         message: "Password is incorrect.",
+      //       });
+      //     });
+      // });
     }
   )
 );

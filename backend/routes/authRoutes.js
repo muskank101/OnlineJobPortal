@@ -50,6 +50,7 @@ router.post("/signup", (req, res) => {
         })
         .catch((err) => {
           user
+            // .delete()       ///let me check why it is not required!
             .delete()
             .then(() => {
               res.status(400).json(err);
@@ -62,29 +63,52 @@ router.post("/signup", (req, res) => {
     })
     .catch((err) => {
       res.status(400).json(err);
+      console.log(err);
     });
 });
-
+// trying another code
+// router.post("/login", (req, res, next) => {
+//   passport.authenticate(
+//     "local",
+//     { session: false },
+//     function (err, user, info) {
+//       if (err) {
+//         return next(err);
+//       }
+//       if (!user) {
+//         res.status(401).json(info);
+//         return;
+//       }
+//       // Token
+//       const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
+//       res.json({
+//         token: token,
+//         type: user.type,
+//       });
+//     }
+//   )(req, res, next);
+// });
+// new chatGPT
 router.post("/login", (req, res, next) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    function (err, user, info) {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        res.status(401).json(info);
-        return;
-      }
-      // Token
-      const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
-      res.json({
-        token: token,
-        type: user.type,
-      });
+  passport.authenticate("local", { session: false }, (err, user, info) => {
+    if (err) {
+      console.log("error!");
+      return next(err);
     }
-  )(req, res, next);
+    if (!user) {
+      console.log("user not found");
+      res.status(401).json(info);
+      return;
+    }
+    // Token
+    const token = jwt.sign({ _id: user._id }, authKeys.jwtSecretKey);
+    console.log("Token:",token);
+    res.json({
+      token: token,
+      type: user.type,
+    });
+  })(req, res, next);
 });
+
 
 module.exports = router;

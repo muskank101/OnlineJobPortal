@@ -5,16 +5,71 @@ import Axios from "axios";
 
 import { SetPopupContext } from "../App";
 
+// const FileUploadInput = (props) => {
+//   const setPopup = useContext(SetPopupContext);
+
+//   const { uploadTo, identifier, handleInput } = props;
+
+//   const [file, setFile] = useState("");
+//   const [uploadPercentage, setUploadPercentage] = useState(0);
+
+//   const handleUpload = () => {
+//     console.log(file);
+//     const data = new FormData();
+//     data.append("file", file);
+//     Axios.post(uploadTo, data, {
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//       onUploadProgress: (progressEvent) => {
+//         setUploadPercentage(
+//           parseInt(
+//             Math.round((progressEvent.loaded * 100) / progressEvent.total)
+//           )
+//         );
+//       },
+//     })
+//       .then((response) => {
+//         console.log(response.data);
+//         handleInput(identifier, response.data.url);
+//         setPopup({
+//           open: true,
+//           severity: "success",
+//           message: response.data.message,
+//         });
+//       })
+//       .catch((err) => {
+//         console.log(err.response);
+//         setPopup({
+//           open: true,
+//           severity: "error",
+//           message: err.response.statusText,
+//           //   message: err.response.data
+//           //     ? err.response.data.message
+//           //     : err.response.statusText,
+//         });
+//       });
+//   };
+
+//////////// from ChatGPT // still not working!
 const FileUploadInput = (props) => {
   const setPopup = useContext(SetPopupContext);
 
   const { uploadTo, identifier, handleInput } = props;
 
-  const [file, setFile] = useState("");
-  const [uploadPercentage, setUploadPercentage] = useState(0);
+  const [file, setFile] = useState(null); // Changed initial state to null
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]); // Update file state with the selected file
+  };
 
   const handleUpload = () => {
-    console.log(file);
+    // Check if a file is selected
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
     const data = new FormData();
     data.append("file", file);
     Axios.post(uploadTo, data, {
@@ -44,13 +99,10 @@ const FileUploadInput = (props) => {
           open: true,
           severity: "error",
           message: err.response.statusText,
-          //   message: err.response.data
-          //     ? err.response.data.message
-          //     : err.response.statusText,
         });
       });
   };
-
+///////////// frontend
   return (
     <Grid container item xs={12} direction="column" className={props.className}>
       <Grid container item xs={12} spacing={0}>
@@ -79,7 +131,7 @@ const FileUploadInput = (props) => {
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <TextField
+          {/* <TextField
             label={props.label}
             value={file ? file.name || "" : ""}
             InputProps={{
@@ -87,7 +139,9 @@ const FileUploadInput = (props) => {
             }}
             variant="outlined"
             style={{ width: "100%" }}
-          />
+            
+          /> */}
+          <input type="file" onChange={handleFileChange} />
         </Grid>
         <Grid item xs={3}>
           <Button

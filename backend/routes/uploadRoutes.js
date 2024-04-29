@@ -12,9 +12,17 @@ const upload = multer();
 
 router.post("/resume", upload.single("file"), (req, res) => {
   const { file } = req;
-  if (file.detectedFileExtension != ".pdf") {
-    res.status(400).json({
-      message: "Invalid format",
+  //chatGPT
+   // Check if a file is uploaded
+   if (!file) {
+    return res.status(400).json({
+      message: "No file uploaded",
+    });
+  }
+  ///end
+  if (file.detectedFileExtension !== ".pdf") {
+    return res.status(400).json({
+      message: "Invalid format, Only PDF files are allowed.",
     });
   } else {
     const filename = `${uuidv4()}${file.detectedFileExtension}`;
